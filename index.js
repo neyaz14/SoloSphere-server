@@ -30,10 +30,10 @@ async function run() {
     // creating data base
     const db = client.db('solodb');
     const jobCollection = db.collection('jobCollection');
+    const bidCollection = db.collection('bidCollection');
 
     // posting new job
     app.post('/add-job', async (req, res) => {
-
       const newJob = req.body;
       console.log(newJob)
       const result = await jobCollection.insertOne(newJob);
@@ -64,7 +64,7 @@ async function run() {
       const result = await jobCollection.deleteOne(query);
       res.send(result);
     })
-    
+
     // get a single job data by id from db
     app.get('/job/:id', async (req, res) => {
       const id = req.params.id
@@ -72,16 +72,34 @@ async function run() {
       const result = await jobCollection.findOne(query)
       res.send(result)
     })
-// update a job 
-app.put('/update-job/:id', async (req, res) => {
-  const id = req.params.id;
-  const query = {_id: new ObjectId(id)};
-  const Job = req.body;
-  const options = {upsert:true};
-  const updatedJob = {$set:Job}
-  const result = await jobCollection.updateOne(query, updatedJob, options)
-  res.send(result)
-})
+    // update a job 
+    app.put('/update-job/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const Job = req.body;
+      const options = { upsert: true };
+      const updatedJob = { $set: Job }
+      const result = await jobCollection.updateOne(query, updatedJob, options)
+      res.send(result)
+    })
+
+
+
+
+
+    //------------------------------------------- for bids 
+    // posting a bid
+    app.post('/add-bid', async (req, res) => {
+      const newBid = req.body;
+      // console.log(newJob)
+      const result = await bidCollection.insertOne(newBid);
+      res.send(result);
+
+    })
+
+
+
+
 
 
   } finally {
