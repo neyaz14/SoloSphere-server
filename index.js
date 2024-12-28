@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-const { MongoClient, ServerApiVersion } = require('mongodb')
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb')
 require('dotenv').config()
 
 const port = process.env.PORT || 9000
@@ -22,7 +22,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-  
+
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
     )
@@ -31,38 +31,52 @@ async function run() {
     const db = client.db('solodb');
     const jobCollection = db.collection('jobCollection');
 
-// posting new job
-    app.post('/add-job', async (req, res)=>{
-  
-        const newJob = req.body;
-        console.log(newJob)
-        const result = await jobCollection.insertOne(newJob);
-        res.send(result);
-     
+    // posting new job
+    app.post('/add-job', async (req, res) => {
+
+      const newJob = req.body;
+      console.log(newJob)
+      const result = await jobCollection.insertOne(newJob);
+      res.send(result);
+
     })
-  // geting add job in the server
-  app.get('/jobs', async (req, res)=>{
-   
+    // geting add job in the server
+    app.get('/jobs', async (req, res) => {
+
       const result = await jobCollection.find().toArray();
       res.send(result);
-  })
+    })
 
-// get a specific job using email 
-  app.get('/jobs/:email', async(req, res)=>{
-    const email = req.params.email;
-    // params --> when must (:email/:id) params - must pass korte hobe
-    // query --> optional - pass korleo hoy, na korleo hoy
-    const query = {'buyer.email':email};
-    const result = await jobCollection.find(query).toArray();
-    res.send(result);
-  })
+    // get a specific job using email 
+    app.get('/jobs/:email', async (req, res) => {
+      const email = req.params.email;
+      // params --> when must (:email/:id) params - must pass korte hobe
+      // query --> optional - pass korleo hoy, na korleo hoy
+      const query = { 'buyer.email': email };
+      const result = await jobCollection.find(query).toArray();
+      res.send(result);
+    })
 
-
+    // deleteing job-post from my-posted-job
+    app.delete('/job/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await jobCollection.deleteOne(query);
+      res.send(result);
+    })
+    
+    // get a single job data by id from db
+    // app.get('/job/:id', async (req, res) => {
+    //   const id = req.params.id
+    //   const query = { _id: new ObjectId(id) }
+    //   const result = await jobCollection.findOne(query)
+    //   res.send(result)
+    // })
 
 
 
   } finally {
-   
+
   }
 }
 run().catch(console.dir)
