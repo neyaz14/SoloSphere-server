@@ -45,10 +45,17 @@ async function run() {
    
       const result = await jobCollection.find().toArray();
       res.send(result);
-   
   })
 
-
+// get a specific job using email 
+  app.get('/jobs/:email', async(req, res)=>{
+    const email = req.params.email;
+    // params --> when must (:email/:id) params - must pass korte hobe
+    // query --> optional - pass korleo hoy, na korleo hoy
+    const query = {'buyer.email':email};
+    const result = await jobCollection.find(query).toArray();
+    res.send(result);
+  })
 
 
 
