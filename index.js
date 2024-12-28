@@ -22,13 +22,40 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Send a ping to confirm a successful connection
-    // await client.db('admin').command({ ping: 1 })
+  
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
     )
+
+    // creating data base
+    const db = client.db('solodb');
+    const jobCollection = db.collection('jobCollection');
+
+// posting new job
+    app.post('/add-job', async (req, res)=>{
+  
+        const newJob = req.body;
+        console.log(newJob)
+        const result = await jobCollection.insertOne(newJob);
+        res.send(result);
+     
+    })
+  // geting add job in the server
+  app.get('/jobs', async (req, res)=>{
+   
+      const result = await jobCollection.find().toArray();
+      res.send(result);
+   
+  })
+
+
+
+
+
+
+
   } finally {
-    // Ensures that the client will close when you finish/error
+   
   }
 }
 run().catch(console.dir)
