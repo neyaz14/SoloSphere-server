@@ -66,13 +66,22 @@ async function run() {
     })
     
     // get a single job data by id from db
-    // app.get('/job/:id', async (req, res) => {
-    //   const id = req.params.id
-    //   const query = { _id: new ObjectId(id) }
-    //   const result = await jobCollection.findOne(query)
-    //   res.send(result)
-    // })
-
+    app.get('/job/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await jobCollection.findOne(query)
+      res.send(result)
+    })
+// update a job 
+app.put('/update-job/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = {_id: new ObjectId(id)};
+  const Job = req.body;
+  const options = {upsert:true};
+  const updatedJob = {$set:Job}
+  const result = await jobCollection.updateOne(query, updatedJob, options)
+  res.send(result)
+})
 
 
   } finally {
